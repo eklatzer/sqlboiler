@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"go/format"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -272,14 +271,9 @@ func executeTemplate(buf *bytes.Buffer, t *template.Template, name string, data 
 
 func formatBuffer(buf *bytes.Buffer, path string) ([]byte, error) {
 	// format and process imports to remove unused ones
-	src, err := imports.Process(path, buf.Bytes(), nil /* options */)
+	output, err := imports.Process(path, buf.Bytes(), nil /* options */)
 	if err == nil {
-		var output []byte
-		// format the output
-		output, err = format.Source(src)
-		if err == nil {
-			return output, nil
-		}
+		return output, nil
 	}
 
 	matches := rgxSyntaxError.FindStringSubmatch(err.Error())
