@@ -60,7 +60,7 @@ func TestFormatBuffer(t *testing.T) {
 	fmt.Fprintf(buf, "package pkg\n\nfunc() {a}\n")
 
 	// Only test error case - happy case is taken care of by template test
-	_, err := formatBuffer(buf)
+	_, err := formatBuffer(buf, "")
 	if err == nil {
 		t.Error("want an error")
 	}
@@ -90,7 +90,7 @@ func TestFormatBufferWithUnusedImports(t *testing.T) {
 	buf := &bytes.Buffer{}
 	fmt.Fprint(buf, src)
 
-	got, err := formatBuffer(buf)
+	got, err := formatBuffer(buf, "")
 	if err != nil {
 		t.Error(err)
 	}

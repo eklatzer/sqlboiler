@@ -235,10 +235,12 @@ func writeImports(out *bytes.Buffer, imps importers.Set) {
 // writeFile writes to the given folder and filename, formatting the buffer
 // given.
 func writeFile(outFolder string, fileName string, input *bytes.Buffer, format bool) error {
+	path := filepath.Join(outFolder, fileName)
+
 	var byt []byte
 	var err error
 	if format {
-		byt, err = formatBuffer(input)
+		byt, err = formatBuffer(input, path)
 		if err != nil {
 			return err
 		}
@@ -246,7 +248,6 @@ func writeFile(outFolder string, fileName string, input *bytes.Buffer, format bo
 		byt = input.Bytes()
 	}
 
-	path := filepath.Join(outFolder, fileName)
 	if err := testHarnessWriteFile(path, byt, 0o664); err != nil {
 		return errors.Wrapf(err, "failed to write output file %s", path)
 	}
@@ -269,9 +270,9 @@ func executeTemplate(buf *bytes.Buffer, t *template.Template, name string, data 
 	return nil
 }
 
-func formatBuffer(buf *bytes.Buffer) ([]byte, error) {
+func formatBuffer(buf *bytes.Buffer, path string) ([]byte, error) {
 	// format and process imports to remove unused ones
-	src, err := imports.Process("", buf.Bytes(), nil /* options */)
+	src, err := imports.Process(path, buf.Bytes(), nil /* options */)
 	if err == nil {
 		var output []byte
 		// format the output
